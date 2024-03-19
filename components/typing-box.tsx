@@ -4,37 +4,50 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { useRouter } from 'next/navigation';
 
-const sentence = "word is the best medicine"
+const sentence = "work is the best medicine"
 
 const TypingBox = () => {
-  const [index, setIndex] = useState(0);
-  const [word, setWord] = useState("");
-  const [color, setColor] = useState(true);
-  const router = useRouter();
+  const [words, setWords] = useState(["work", "is", "the", "best", "medicine"]);
+  const [inputValue, setInputValue] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const onChange = (event: any) => {
     const { value } = event.target;
-    const written = sentence.slice(0, index + 1);
-    if (value === written) {
-      setIndex(prev => prev + 1);
-      setColor(false);
-    }
-    else {
-      setColor(true);
-    }
-    setWord(value);
+    setInputValue(value);
   }
+
+  // this logic is used to remove space if input is empty and user click space
+  const handleKeyDown = (event) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      if (inputValue.trim() === words[currentIndex]) {
+        // Remove the current word from the words array
+        setWords((prevWords) => prevWords.slice(1));
+        setInputValue(""); // Clear the input field
+        setCurrentIndex((prevIndex) => prevIndex); // Move to the next word
+      }
+    }
+  };
 
   const onClick = () => {
     window.location.reload();
   }
   return (
     <div>
-      <div>{sentence}</div>
-      <div className={cn("text-green-500", color && "text-red-500")}>{word}</div>
-      <Input onChange={onChange} />
-      <Button onClick={onClick}>Refresh</Button>
+      <div>
+        {words.map((word, index) => (
+          <span key={index} style={{ color: index === currentIndex ? "green" : "black" }}>
+            {word}{" "}
+          </span>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={onChange}
+        onKeyDown={handleKeyDown}
+      />
     </div>
   )
 }
