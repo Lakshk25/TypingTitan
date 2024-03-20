@@ -1,43 +1,39 @@
 "use client";
+import React, { useState } from "react";
 
-import { useState } from "react";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-
-const sentence = "work is the best medicine"
-
-const TypingBox = () => {
-  const [words, setWords] = useState(["work", "is", "the", "best", "medicine"]);
+const TypingTest = () => {
+  const initialWords = ["work", "is", "the", "best", "medicine", "that", "can,", "reduce", "anxiety", "of", "workload", "sometimes"];
+  const [words, setWords] = useState(initialWords);
   const [inputValue, setInputValue] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [completedWords, setCompletedWords] = useState([]);
 
-  const onChange = (event: any) => {
+  const handleInputChange = (event) => {
     const { value } = event.target;
     setInputValue(value);
-  }
+  };
 
-  // this logic is used to remove space if input is empty and user click space
   const handleKeyDown = (event) => {
     if (event.key === " ") {
       event.preventDefault();
-      if (inputValue.trim() === words[currentIndex]) {
-        // Remove the current word from the words array
-        setWords((prevWords) => prevWords.slice(1));
+      const trimmedInputValue = inputValue.trim();
+      if (trimmedInputValue === words[0]) {
+        setCompletedWords((prevCompletedWords) => [...prevCompletedWords, words[0]]);
         setInputValue(""); // Clear the input field
-        setCurrentIndex((prevIndex) => prevIndex); // Move to the next word
+        setWords((prevWords) => prevWords.slice(1)); // Remove the completed word
       }
     }
   };
 
-  const onClick = () => {
-    window.location.reload();
-  }
   return (
     <div>
-      <div>
-        {words.map((word, index) => (
-          <span key={index} style={{ color: index === currentIndex ? "green" : "black" }}>
+      <div className="text-3xl font-normal">
+        {initialWords.map((word, index) => (
+          <span
+            key={index}
+            style={{
+              color: completedWords.includes(word) ? "green" : "black",
+            }}
+          >
             {word}{" "}
           </span>
         ))}
@@ -45,11 +41,11 @@ const TypingBox = () => {
       <input
         type="text"
         value={inputValue}
-        onChange={onChange}
+        onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
     </div>
-  )
-}
+  );
+};
 
-export default TypingBox
+export default TypingTest;
