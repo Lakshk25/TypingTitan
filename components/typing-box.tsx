@@ -8,7 +8,6 @@ const TypingTest = () => {
   const [inputValue, setInputValue] = useState("");
   const [completedWords, setCompletedWords] = useState<string[]>([]);
   const [incorrectWords, setIncorrectWords] = useState<string[]>([]);
-  const [isWordCorrect, setIsWordCorrect] = useState(true);
 
   // for input 
   const handleInputChange = (event: any) => {
@@ -18,6 +17,11 @@ const TypingTest = () => {
 
   const handleKeyDown = (event: any) => {
     if (event.key === " ") {
+      // TODO: don't jump to next word if no word is typed and space is clicked 
+      if(inputValue.length === 0){
+        console.log("empty");
+        return;
+      }
       event.preventDefault(); // prevent space default behaviour (adding space)
       const trimmedInputValue = inputValue.trim();  // Remove leading and trailing whitespace from the input value
       if (trimmedInputValue === words[0]) {
@@ -27,7 +31,6 @@ const TypingTest = () => {
       else {
         setIncorrectWords((prevWords) => [...prevWords, words[0]]);
         setInputValue("");
-        setIsWordCorrect(false);
       }
       setWords((prevWords) => prevWords.slice(1)); // Remove the completed word
     }
@@ -39,7 +42,7 @@ const TypingTest = () => {
         {initialWords.map((word, index) => (
           <span
             key={index}
-            className={cn(completedWords.includes(word) ? "text-green-500" : "text-black", incorrectWords.includes(word) && "text-red-500")}
+            className={cn(completedWords.includes(word) ? "text-green-500" : "text-black", incorrectWords.includes(word) && "text-red-500", words[0] === word && "bg-gray-400")}
           >
             {word}{" "}
           </span>
